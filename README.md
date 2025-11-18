@@ -33,25 +33,59 @@ A feladat célja egy olyan algoritmus kifejlesztése, amely egy hibákkal (alakh
 
 ## Használat
 
-A program futtatásához szükséges utasítások a későbbiekben kerülnek hozzáadásra.
+### Telepítés
 
 1.  **Klónozza a repository-t:**
     ```bash
     git clone https://github.com/kolosmile/mi-szorgalmi.git
     cd mi-szorgalmi
     ```
+
 2.  **Hozzon létre és aktiváljon egy virtuális környezetet:**
-    ```bash
+    ```powershell
+    # Windows (PowerShell)
     python -m venv venv
     .\venv\Scripts\Activate.ps1
     ```
+
 3.  **Telepítse a szükséges csomagokat:**
     ```bash
     pip install -r requirements.txt
     ```
-4.  **Futtassa a programot:**
+
+### Fő program futtatása
+
+A `main.py` szkript futtatja a körillesztést egyetlen, véletlenszerűen generált ponthalmazon. A paraméterek a parancssorból módosíthatók.
+
+**Példa futtatásra:**
+```bash
+# Futtatás alapértelmezett beállításokkal
+python src/main.py
+
+# Futtatás egyedi paraméterekkel (több pont, nagyobb zaj)
+python src/main.py --points 300 --noise 10 --generations 500
+```
+A lehetséges argumentumok listájáért futtassa a `python src/main.py --help` parancsot.
+
+### Kiértékelés futtatása
+
+Az `evaluation.py` szkript különböző teszteket futtat az algoritmus teljesítményének elemzésére.
+
+**Példa futtatások:**
+
+1.  **Futási idő vizsgálata a pontok számának függvényében:**
     ```bash
-    python src/main.py
+    python src/evaluation.py --test runtime
+    ```
+
+2.  **Mutációs ráta hatásának vizsgálata a végeredményre:**
+    ```bash
+    python src/evaluation.py --test mutation
+    ```
+
+3.  **Konvergencia-görbe megjelenítése:**
+    ```bash
+    python src/evaluation.py --test convergence
     ```
 
 ---
