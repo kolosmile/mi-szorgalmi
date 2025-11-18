@@ -1,0 +1,1 @@
+# A megoldás elve, módszere
