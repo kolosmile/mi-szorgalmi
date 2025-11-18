@@ -28,6 +28,7 @@ class CircleGA:
         self.r_range = (max_dim / 10, max_dim)
 
         self.population = self._initialize_population()
+        self.fitness_history = [] # Fitnesz előzmények tárolása
 
     def _initialize_population(self):
         """Létrehozza a kezdeti populációt véletlenszerű körökből."""
@@ -116,6 +117,7 @@ class CircleGA:
         """Futtatja a genetikus algoritmust a megadott generációszámig."""
         best_fitness_overall = np.inf
         best_individual_overall = None
+        self.fitness_history = []
 
         for generation in range(self.generations):
             # 1. Fitnesz számítás
@@ -126,6 +128,8 @@ class CircleGA:
             if fitness_scores[best_idx] < best_fitness_overall:
                 best_fitness_overall = fitness_scores[best_idx]
                 best_individual_overall = self.population[best_idx]
+            
+            self.fitness_history.append(best_fitness_overall)
 
             if (generation + 1) % 20 == 0:
                 print(f"Generáció: {generation + 1}/{self.generations}, Legjobb fitnesz: {best_fitness_overall:.2f}")
@@ -142,7 +146,7 @@ class CircleGA:
             # Az új populáció a mutált utódokból áll
             self.population = mutated_offspring
             
-        return best_individual_overall
+        return best_individual_overall, self.fitness_history
 
 def visualize_solution(points, circle_params, title="Megoldás"):
     """Megjeleníti a ponthalmazt és a megtalált kört."""
@@ -178,7 +182,7 @@ if __name__ == '__main__':
     
     # 2. Genetikus algoritmus inicializálása és futtatása
     ga = CircleGA(points, population_size=200, generations=300, mutation_rate=0.2)
-    best_circle = ga.run()
+    best_circle, history = ga.run()
     
     print("\n--- Eredmény ---")
     print(f"A legjobb megtalált kör paraméterei:")
@@ -187,3 +191,12 @@ if __name__ == '__main__':
     
     # 3. Eredmény megjelenítése
     visualize_solution(points, best_circle, "Genetikus Algoritmus Eredménye")
+
+    # 4. Konvergencia grafikon
+    plt.figure(figsize=(10, 5))
+    plt.plot(history)
+    plt.title("Fitnesz érték alakulása a generációk során")
+    plt.xlabel("Generáció")
+    plt.ylabel("Legjobb fitnesz (minél kisebb, annál jobb)")
+    plt.grid(True)
+    plt.show()
