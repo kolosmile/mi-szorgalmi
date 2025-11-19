@@ -66,7 +66,7 @@ def main():
         mutation_rate=args.mutation_rate,
         crossover_rate=args.crossover_rate
     )
-    best_circle = ga.run()
+    best_circle, fitness_history = ga.run()
     
     end_time = time.time()
     execution_time = end_time - start_time

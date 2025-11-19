@@ -4,16 +4,18 @@
 \usepackage[hungarian]{babel}
 \usepackage{graphicx}
 \usepackage{listings}
-\usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}
 \usepackage{float}
 \usepackage{geometry}
 \usepackage{xcolor}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{url}
+\emergencystretch 3em
 
 \geometry{
  a4paper,
- total={170mm,257mm},
- left=25mm,
- top=25mm,
+ margin=2.5cm
 }
 
 \lstset{
@@ -35,7 +37,8 @@
 % Title Page
 \begin{titlepage}
     \centering
-    \vspace*{1cm}
+    \includegraphics[width=0.4\textwidth]{images/bme_logo.png}
+    \vspace*{0.5cm}
     
     \Huge
     \textbf{Mesterséges Intelligencia Szorgalmi Feladat}
@@ -176,7 +179,7 @@ A projekt fő mappái és fájljai a következők:
 \end{lstlisting}
 
 
-\subsection{\texttt{point\_generator.py}: A ponthalmaz generátor}
+\subsection{\texorpdfstring{\texttt{point\_generator.py}}{point\_generator.py}: A ponthalmaz generátor}
 
 Ez a modul felel a tesztadatok, azaz a hibákkal terhelt ponthalmazok létrehozásáért.
 \begin{itemize}
@@ -184,31 +187,35 @@ Ez a modul felel a tesztadatok, azaz a hibákkal terhelt ponthalmazok létrehoz�
 \item \textbf{\texttt{visualize\_point\_cloud(...)}}: Egy segédfüggvény, amely a \texttt{Matplotlib} segítségével kirajzolja a generált pontokat.
 \end{itemize}
 
-\subsection{\texttt{genetic\_algorithm.py}: A körillesztő algoritmus}
+\subsection{\texorpdfstring{\texttt{genetic\_algorithm.py}}{genetic\_algorithm.py}: A körillesztő algoritmus}
 
 Ez a fájl tartalmazza a genetikus algoritmus logikáját egy \texttt{CircleGA} nevű osztályba zárva.
 \begin{itemize}
 \item \textbf{\texttt{CircleGA.\_\_init\_\_(...)}}: A konstruktor inicializálja az algoritmust a megadott paraméterekkel (populációméret, mutációs ráta stb.), és létrehozza a kezdeti, véletlenszerű körökből álló populációt.
 \item \textbf{\texttt{CircleGA.\_calculate\_fitness()}}: Az algoritmus legfontosabb metódusa. Kiszámítja minden egyes körhöz a fitnesz értéket. A fitnesz a kör sugarából és egy büntetőtagból áll.
 \end{itemize}
+    \begin{minipage}{\linewidth}
     \begin{lstlisting}[language=Python]
     # Részlet a fitnesz számításból
     distances = np.sqrt((self.points[:, 0] - cx)**2 + (self.points[:, 1] - cy)**2)
     
     # Büntetés a körön kívül eső pontokért
     outside_points = distances[distances > r]
-    penalty = np.sum(outside_points - r) * 10 # A büntetés súlyozása
+    
+    # A büntetés súlyozása
+    penalty = np.sum(outside_points - r) * 10 
     
     # A fitnesz a sugár és a büntetés összege
     fitness_scores[i] = r + penalty
     
 \end{lstlisting}
+\end{minipage}
 \begin{itemize}
 \item \textbf{\texttt{CircleGA.\_select()}}, \textbf{\texttt{\_crossover()}}, \textbf{\texttt{\_mutate()}}: Ezek a metódusok valósítják meg a klasszikus evolúciós lépéseket.
 \item \textbf{\texttt{CircleGA.run()}}: A fő ciklus, amely a generációkon keresztül futtatja az evolúciót, és a végén visszaadja a legjobb megtalált kört és a konvergencia-történetet.
 \end{itemize}
 
-\subsection{\texttt{main.py}: A központi vezérlő szkript}
+\subsection{\texorpdfstring{\texttt{main.py}}{main.py}: A központi vezérlő szkript}
 
 Ez a szkript a program belépési pontja. Összefogja a többi modul működését, és lehetővé teszi a program parancssori futtatását és paraméterezését.
 \begin{itemize}
@@ -217,7 +224,7 @@ Ez a szkript a program belépési pontja. Összefogja a többi modul működés�
 \item \textbf{Eredményközlés:} Kiírja a konzolra a futási időt és a megtalált kör paramétereit, majd vizuálisan is megjeleníti az eredményt.
 \end{itemize}
 
-\subsection{\texttt{evaluation.py}: A kiértékelő modul}
+\subsection{\texorpdfstring{\texttt{evaluation.py}}{evaluation.py}: A kiértékelő modul}
 
 Ez a modul az algoritmus teljesítményének részletes, statisztikai alapú elemzésére szolgál. A modul képes automatikusan lefuttatni a különböző teszteket, az eredményeket CSV fájlba menteni, és professzionális grafikonokat generálni a dokumentációhoz.
 
@@ -243,6 +250,8 @@ Mivel a genetikus algoritmusok sztochasztikus (véletlen alapú) működésűek,
 
 A méréseket az alábbi hardver- és szoftverkörnyezetben végeztük:
 \begin{itemize}
+\raggedright
+\item \textbf{Hardver:} 12th Gen Intel(R) Core(TM) i7-12700H CPU, 32 GB RAM
 \item \textbf{Operációs rendszer:} Windows 11
 \item \textbf{Környezet:} Python 3.12
 \item \textbf{Felhasznált könyvtárak:} \texttt{NumPy} (számítások), \texttt{Matplotlib} (vizualizáció), \texttt{tracemalloc} (memóriamérés).
@@ -278,7 +287,7 @@ A memóriahasználat szintén növekvő tendenciát mutat, de abszolút értékb
 
 \subsection{Paraméterek érzékenységvizsgálata}
 
-A genetikus algoritmusok teljesítményét nagyban befolyásolják a beállított hiperparaméterek. Kiemelten vizsgáltuk a \textbf{mutációs ráta} hatását, mivel ez felelős a populáció sokszínűségének fenntartásáért és a lokális optimumok elkerüléséért.
+A genetikus algoritmusok teljesítményét nagyban befolyásolják a hiperparaméterek. Kiemelten vizsgáltuk a \textbf{mutációs ráta} hatását, mivel ez felelős a populáció sokszínűségének fenntartásáért és a lokális optimumok elkerüléséért.
 
 \begin{figure}[H]
 \centering
