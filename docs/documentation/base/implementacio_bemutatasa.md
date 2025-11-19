@@ -8,16 +8,16 @@ A projekt fő mappái és fájljai a következők:
 
 ```
 .
-├── docs/                 # Dokumentáció és feladatkiírás
-├── src/                  # A Python forráskódok
-│   ├── point_generator.py
-│   ├── genetic_algorithm.py
-│   ├── evaluation.py
-│   └── main.py
-├── venv/                 # Virtuális környezet
-├── .gitignore
-├── requirements.txt      # Projekt függőségek
-└── README.md
+|-- docs/                 # Dokumentáció és feladatkiírás
+|-- src/                  # A Python forráskódok
+|   |-- point_generator.py
+|   |-- genetic_algorithm.py
+|   |-- evaluation.py
+|   |-- main.py
+|-- venv/                 # Virtuális környezet
+|-- .gitignore
+|-- requirements.txt      # Projekt függőségek
+|-- README.md
 ```
 
 ## `point_generator.py`: A ponthalmaz generátor
@@ -55,7 +55,13 @@ Ez a szkript a program belépési pontja. Összefogja a többi modul működés�
 
 ## `evaluation.py`: A kiértékelő modul
 
-Ez a modul az algoritmus teljesítményének elemzésére szolgál. Három fő funkciót valósít meg, amelyek parancssorból indíthatók:
-1.  **Futási idő elemzése (`--test runtime`):** Megméri és ábrázolja, hogyan változik az algoritmus futási ideje a feldolgozandó pontok számának növelésével.
-2.  **Mutációs ráta hatásának vizsgálata (`--test mutation`):** Különböző mutációs rátákkal futtatja az algoritmust, és ábrázolja, hogy ez a paraméter hogyan befolyásolja a végeredmény (a megtalált kör sugarának) minőségét.
-3.  **Konvergencia vizsgálat (`--test convergence`):** Egyetlen futás alapján kirajzolja a konvergencia-görbét, amely bemutatja, hogyan javul a legjobb megoldás fitnesz értéke a generációk során.
+Ez a modul az algoritmus teljesítményének részletes, statisztikai alapú elemzésére szolgál. A modul képes automatikusan lefuttatni a különböző teszteket, az eredményeket CSV fájlba menteni, és professzionális grafikonokat generálni a dokumentációhoz.
+
+A modul parancssori argumentumokkal vezérelhető:
+*   `--all`: Az összes teszt futtatása.
+*   `--scalability`: Skálázhatósági teszt (futási idő és memória a pontszám függvényében).
+*   `--mutation`: Mutációs ráta érzékenységvizsgálata.
+*   `--robustness`: Robusztusság vizsgálata (outlierek hatása).
+*   `--convergence`: Konvergencia vizsgálat.
+
+A modul a `tracemalloc` könyvtárat használja a memóriahasználat mérésére, és a `pandas` segítségével kezeli a mérési adatokat. Az eredmények a `docs/documentation/data` (CSV) és `docs/documentation/images` (PNG) mappákba kerülnek.
