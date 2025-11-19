@@ -14,13 +14,14 @@ A feladat célja egy olyan algoritmus kifejlesztése, amely egy hibákkal (alakh
 *   **Könyvtárak:**
     *   `numpy`: Numerikus műveletekhez és adatszerkezetek kezeléséhez.
     *   `matplotlib`: Az eredmények (ponthalmaz, illesztett kör) vizualizációjához.
+    *   `pandas`: A kiértékelési adatok kezeléséhez és elemzéséhez.
 
 ## Projekt Struktúra
 
 ```
 .
 ├── docs/
-│   ├── documentation/      # A szorgalmi feladat dokumentációja
+│   ├── documentation/      # A szorgalmi feladat dokumentációja (LaTeX forrás és PDF)
 │   └── objective/          # A feladatkiírás eredeti dokumentumai
 ├── src/
 │   ├── point_generator.py  # Modul a hibákkal terhelt ponthalmaz generálásához
@@ -28,6 +29,7 @@ A feladat célja egy olyan algoritmus kifejlesztése, amely egy hibákkal (alakh
 │   ├── evaluation.py       # Az algoritmus kiértékeléséért felelős modul
 │   └── main.py             # A fő alkalmazás, amely összefogja a folyamatot
 ├── .gitignore
+├── requirements.txt        # Python függőségek listája
 └── README.md
 ```
 
@@ -44,8 +46,8 @@ A feladat célja egy olyan algoritmus kifejlesztése, amely egy hibákkal (alakh
 2.  **Hozzon létre és aktiváljon egy virtuális környezetet:**
     ```powershell
     # Windows (PowerShell)
-    python -m venv venv
-    .\venv\Scripts\Activate.ps1
+    python -m venv .venv
+    .\.venv\Scripts\Activate.ps1
     ```
 
 3.  **Telepítse a szükséges csomagokat:**
@@ -73,20 +75,34 @@ Az `evaluation.py` szkript különböző teszteket futtat az algoritmus teljesí
 
 **Példa futtatások:**
 
-1.  **Futási idő vizsgálata a pontok számának függvényében:**
+1.  **Minden teszt futtatása:**
     ```bash
-    python src/evaluation.py --test runtime
+    python src/evaluation.py --all
     ```
 
-2.  **Mutációs ráta hatásának vizsgálata a végeredményre:**
+2.  **Skálázhatóság vizsgálata (Futási idő és memória):**
     ```bash
-    python src/evaluation.py --test mutation
+    python src/evaluation.py --scalability
     ```
 
-3.  **Konvergencia-görbe megjelenítése:**
+3.  **Mutációs ráta hatásának vizsgálata:**
     ```bash
-    python src/evaluation.py --test convergence
+    python src/evaluation.py --mutation
     ```
+
+4.  **Konvergencia vizsgálata:**
+    ```bash
+    python src/evaluation.py --convergence
+    ```
+
+## Dokumentáció
+
+A projekt részletes dokumentációja a `docs/documentation` mappában található. A PDF generálásához LaTeX környezet (pl. TeX Live vagy TinyTeX) szükséges.
+
+**Fordítás:**
+```bash
+pdflatex -output-directory="docs/documentation" "docs/documentation/dokumentacio.tex"
+```
 
 ---
 *Készítette: Mile Kolos (OXEZ80)*
