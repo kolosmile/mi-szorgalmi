@@ -1,0 +1,341 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[hungarian]{babel}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{geometry}
+\usepackage{xcolor}
+
+\geometry{
+ a4paper,
+ total={170mm,257mm},
+ left=25mm,
+ top=25mm,
+}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    keywordstyle=\color{blue},
+    stringstyle=\color{red},
+    commentstyle=\color{green},
+    showstringspaces=false,
+    inputencoding=utf8,
+    extendedchars=true,
+    literate={á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ö}{{\"o}}1 {ő}{{\H{o}}}1 {ú}{{\'u}}1 {ü}{{\"u}}1 {ű}{{\H{u}}}1
+             {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ö}{{\"O}}1 {Ő}{{\H{O}}}1 {Ú}{{\'U}}1 {Ü}{{\"U}}1 {Ű}{{\H{U}}}1
+}
+
+\begin{document}
+
+% Title Page
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    
+    \Huge
+    \textbf{Mesterséges Intelligencia Szorgalmi Feladat}
+    
+    \vspace{0.5cm}
+    \LARGE
+    Téma: Kör illesztése adott ponthalmazra 2.
+    
+    \vspace{1.5cm}
+    
+    \textbf{Budapesti Műszaki és Gazdaságtudományi Egyetem}\\
+    Gépészmérnöki Kar\\
+    Gyártástudomány és Technológia Tanszék
+    
+    \vspace{2cm}
+    
+    \begin{table}[h]
+        \centering
+        \large
+        \begin{tabular}{ll}
+            \textbf{Készítette:} & Mile Kolos \\
+            \textbf{Neptun-kód:} & OXEZ80 \\
+            \textbf{E-mail:} & kolosk5@gmail.com \\
+            \textbf{Konzulens:} & Dr. Póka György \\
+        \end{tabular}
+    \end{table}
+    
+    \vfill
+    
+    \Large
+    Budapest, 2025. november 18.
+    
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% Content from files
+
+\section{A feladat leírása}
+
+\subsection{A probléma bemutatása}
+
+A feladat egy klasszikus geometriai-optimalizálási probléma modern, mesterséges intelligencia alapú megközelítése. A cél egy adott 2D ponthalmazra a \textbf{legkisebb befoglaló kör} (minimum enclosing circle) meghatározása. A kihívást az jelenti, hogy a ponthalmaz nem ideális, hanem valós mérési vagy digitalizálási folyamatokból származó hibákat szimulál, úgymint:
+\begin{itemize}
+\item \textbf{Alakhiba:} A pontok nem egy tökéletes köríven helyezkednek el.
+\item \textbf{Véletlen zaj:} Minden pont pozíciója egy kis mértékű, véletlenszerű eltolással terhelt.
+\item \textbf{Kiugró pontok (outlierek):} A ponthalmaz tartalmaz néhány, a fő csoporttól távol eső, hibás mérési eredményt szimuláló pontot.
+\end{itemize}
+
+Az algoritmusnak robusztusnak kell lennie, hogy ezekkel a hibákkal megbirkózzon, és a definíció szerint megtalálja azt a legkisebb sugarú kört, amely a ponthalmaz \textit{összes} elemét tartalmazza.
+
+\subsection{Célkitűzések}
+
+A projekt során a következő fő célokat kellett elérni:
+
+1.  \textbf{Ponthalmaz generálása:} Egy olyan programmodul létrehozása, amely képes paraméterezhető módon, a fent említett hibákkal terhelt ponthalmazokat generálni.
+2.  \textbf{Algoritmus fejlesztése:} Egy mesterséges intelligencia alapú algoritmus (esetünkben genetikus algoritmus) implementálása, amely a generált ponthalmazra illeszti a legkisebb befoglaló kört.
+3.  \textbf{Kiértékelés:} A kifejlesztett módszer teljesítményének objektív elemzése. Vizsgálni kell a futási időt a bemeneti adatok méretének függvényében, elemezni kell az algoritmus paramétereinek (pl. mutációs ráta) hatását az eredményre, és vizsgálni kell a megoldás konvergenciáját.
+4.  \textbf{Dokumentálás:} A teljes folyamat, a módszer és az elért eredmények részletes dokumentálása a követelményeknek megfelelően.
+
+\newpage
+\section{A megoldás elve, módszere}
+
+A probléma megoldására egy Python-alapú szoftveres megoldás készült, amely egy genetikus algoritmust alkalmaz a legkisebb befoglaló kör megkeresésére.
+
+\subsection{Technológiai háttér}
+
+A projekt az alábbi technológiákra épül:
+\begin{itemize}
+\item \textbf{Nyelv:} Python 3
+\item \textbf{Könyvtárak:}
+    \begin{itemize}
+    \item \texttt{NumPy}: A numerikus számítások (távolságmérés, koordináta-manipuláció) hatékony elvégzéséért felel. Nélkülözhetetlen a nagy mennyiségű pontadat gyors feldolgozásához.
+    \item \texttt{Matplotlib}: Az adatok és eredmények vizualizációjáért felel. Segítségével ábrázoljuk a generált ponthalmazokat, az illesztett köröket és a kiértékelés során kapott grafikonokat.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Ponthalmaz generálása hibákkal}
+
+A kiindulási adathalmazt egy dedikált modul (\texttt{point\_generator.py}) hozza létre, amely egy ideális körből indul ki, és szisztematikusan hibákat ad hozzá:
+\begin{enumerate}
+\item \textbf{Alap kör definiálása:} Egy \texttt{(x, y)} középpontú, \texttt{r} sugarú körön egyenletesen elhelyezünk \texttt{N} számú pontot.
+\item \textbf{Alakhiba hozzáadása:} A pontok koordinátáit enyhén torzítjuk, ami egy ellipszis-szerű alakot eredményez.
+\item \textbf{Véletlen zaj hozzáadása:} Minden pont \texttt{x} és \texttt{y} koordinátájához egy normális eloszlású véletlen értéket adunk, ami a mérési pontatlanságot szimulálja.
+\item \textbf{Kiugró pontok generálása:} A fő ponthalmazon kívül, nagyobb távolságra elhelyezünk néhány pontot, amelyek a durva mérési hibákat reprezentálják.
+\end{enumerate}
+
+\subsection{A genetikus algoritmus mint megoldási módszer}
+
+A legkisebb befoglaló kör egy optimalizálási problémaként fogható fel, amelynek megoldására a genetikus algoritmus (GA) kiválóan alkalmas. A GA az evolúció elveit (szelekció, keresztezés, mutáció) utánozva keresi a legjobb megoldást.
+\begin{itemize}
+\item \textbf{Egyed (Individuum):} Egy lehetséges megoldás, esetünkben egy kör. Minden egyedet három gén ír le: a kör középpontjának \texttt{cx} és \texttt{cy} koordinátája, valamint \texttt{r} sugara. A kromoszóma tehát egy \texttt{[cx, cy, r]} számtömb.
+\item \textbf{Populáció:} Egyedek (körök) egy csoportja, amelyekkel az algoritmus egy adott generációban dolgozik.
+\item \textbf{Fitneszfüggvény:} Az algoritmus legkritikusabb része. Megmondja, hogy egy adott kör (egyed) mennyire "jó" megoldás. A cél a sugár minimalizálása, miközben az összes pont a körön belül helyezkedik el. A fitnesz értékét a következőképpen számoljuk:
+\end{itemize}
+\begin{center}
+\texttt{fitnesz = sugár + büntetés}
+\end{center}
+\begin{itemize}
+\item A \textbf{büntetés} értéke nulla, ha az összes pont a körön belül van.
+\item Ha egy vagy több pont a körön kívülre esik, a büntetés arányos a körvonalon kívül eső pontok távolságainak összegével. Ez a büntetőtag "kényszeríti" az algoritmust, hogy olyan köröket részesítsen előnyben, amelyek minden pontot lefednek.
+\item \textbf{Evolúciós folyamat:}
+\end{itemize}
+\begin{enumerate}
+\item \textbf{Inicializálás:} Véletlenszerű körökből álló kezdő populáció létrehozása.
+\item \textbf{Szelekció:} A populációból a legjobb fitneszértékkel (legkisebb értékkel) rendelkező egyedek kiválasztása. A jobb egyedek nagyobb eséllyel vesznek részt a szaporodásban.
+\item \textbf{Keresztezés (Crossover):} Két kiválasztott szülőegyed génjeinek (koordináták, sugár) kombinálásával új utódok jönnek létre.
+\item \textbf{Mutáció:} Az utódok génjeit kis, véletlenszerű mértékben módosítjuk. Ez biztosítja a változatosságot és segít elkerülni a lokális optimumokba való beragadást.
+\item \textbf{Ismétlés:} A folyamat a szelekciótól a mutációig ismétlődik egy előre meghatározott generációszámon keresztül.
+\end{enumerate}
+\begin{itemize}
+\item \textbf{Leállási feltétel:} Az algoritmus a megadott számú generáció lefutása után leáll, és a legjobb addig talált egyedet (kört) adja vissza megoldásként.
+\end{itemize}
+
+\newpage
+\section{Az implementáció bemutatása}
+
+A szoftver Python 3 nyelven készült, moduláris felépítéssel, hogy a különböző funkciók (pontgenerálás, algoritmus, kiértékelés) logikailag elkülönüljenek.
+
+\subsection{A projekt struktúrája}
+
+A projekt fő mappái és fájljai a következők:
+
+\begin{lstlisting}
+.
+|-- docs/                 # Dokumentáció és feladatkiírás
+|-- src/                  # A Python forráskódok
+|   |-- point_generator.py
+|   |-- genetic_algorithm.py
+|   |-- evaluation.py
+|   |-- main.py
+|-- venv/                 # Virtuális környezet
+|-- .gitignore
+|-- requirements.txt      # Projekt függőségek
+|-- README.md
+
+\end{lstlisting}
+
+
+\subsection{\texttt{point\_generator.py}: A ponthalmaz generátor}
+
+Ez a modul felel a tesztadatok, azaz a hibákkal terhelt ponthalmazok létrehozásáért.
+\begin{itemize}
+\item \textbf{\texttt{generate\_point\_cloud(...)}}: A központi függvény, amely a megadott paraméterek (középpont, sugár, pontszám, hibák mértéke) alapján legenerálja és visszaadja a pontokat egy \texttt{NumPy} tömbben.
+\item \textbf{\texttt{visualize\_point\_cloud(...)}}: Egy segédfüggvény, amely a \texttt{Matplotlib} segítségével kirajzolja a generált pontokat.
+\end{itemize}
+
+\subsection{\texttt{genetic\_algorithm.py}: A körillesztő algoritmus}
+
+Ez a fájl tartalmazza a genetikus algoritmus logikáját egy \texttt{CircleGA} nevű osztályba zárva.
+\begin{itemize}
+\item \textbf{\texttt{CircleGA.\_\_init\_\_(...)}}: A konstruktor inicializálja az algoritmust a megadott paraméterekkel (populációméret, mutációs ráta stb.), és létrehozza a kezdeti, véletlenszerű körökből álló populációt.
+\item \textbf{\texttt{CircleGA.\_calculate\_fitness()}}: Az algoritmus legfontosabb metódusa. Kiszámítja minden egyes körhöz a fitnesz értéket. A fitnesz a kör sugarából és egy büntetőtagból áll.
+\end{itemize}
+    \begin{lstlisting}[language=Python]
+    # Részlet a fitnesz számításból
+    distances = np.sqrt((self.points[:, 0] - cx)**2 + (self.points[:, 1] - cy)**2)
+    
+    # Büntetés a körön kívül eső pontokért
+    outside_points = distances[distances > r]
+    penalty = np.sum(outside_points - r) * 10 # A büntetés súlyozása
+    
+    # A fitnesz a sugár és a büntetés összege
+    fitness_scores[i] = r + penalty
+    
+\end{lstlisting}
+\begin{itemize}
+\item \textbf{\texttt{CircleGA.\_select()}}, \textbf{\texttt{\_crossover()}}, \textbf{\texttt{\_mutate()}}: Ezek a metódusok valósítják meg a klasszikus evolúciós lépéseket.
+\item \textbf{\texttt{CircleGA.run()}}: A fő ciklus, amely a generációkon keresztül futtatja az evolúciót, és a végén visszaadja a legjobb megtalált kört és a konvergencia-történetet.
+\end{itemize}
+
+\subsection{\texttt{main.py}: A központi vezérlő szkript}
+
+Ez a szkript a program belépési pontja. Összefogja a többi modul működését, és lehetővé teszi a program parancssori futtatását és paraméterezését.
+\begin{itemize}
+\item \textbf{Argumentumok feldolgozása:} Az \texttt{argparse} könyvtár segítségével kezeli a parancssori argumentumokat, így a pontgenerálás és a genetikus algoritmus minden fontos paramétere könnyen módosítható futás közben.
+\item \textbf{Vezérlés:} Meghívja a pontgenerátort, majd az eredményül kapott pontokra ráfuttatja a genetikus algoritmust.
+\item \textbf{Eredményközlés:} Kiírja a konzolra a futási időt és a megtalált kör paramétereit, majd vizuálisan is megjeleníti az eredményt.
+\end{itemize}
+
+\subsection{\texttt{evaluation.py}: A kiértékelő modul}
+
+Ez a modul az algoritmus teljesítményének részletes, statisztikai alapú elemzésére szolgál. A modul képes automatikusan lefuttatni a különböző teszteket, az eredményeket CSV fájlba menteni, és professzionális grafikonokat generálni a dokumentációhoz.
+
+A modul parancssori argumentumokkal vezérelhető:
+\begin{itemize}
+\item \texttt{--all}: Az összes teszt futtatása.
+\item \texttt{--scalability}: Skálázhatósági teszt (futási idő és memória a pontszám függvényében).
+\item \texttt{--mutation}: Mutációs ráta érzékenységvizsgálata.
+\item \texttt{--robustness}: Robusztusság vizsgálata (outlierek hatása).
+\item \texttt{--convergence}: Konvergencia vizsgálat.
+\end{itemize}
+
+A modul a \texttt{tracemalloc} könyvtárat használja a memóriahasználat mérésére, és a \texttt{pandas} segítségével kezeli a mérési adatokat. Az eredmények a \texttt{docs/documentation/data} (CSV) és \texttt{docs/documentation/images} (PNG) mappákba kerülnek.
+
+\newpage
+\section{Tapasztalatok és kiértékelés}
+
+A szoftver fejlesztésének utolsó fázisában egy átfogó teljesítmény- és minőségvizsgálatot végeztünk. A kiértékelés célja annak igazolása volt, hogy a genetikus algoritmus képes megbízhatóan megtalálni a legkisebb befoglaló kört különböző nehézségű bemeneti adatok esetén is, valamint a futási idő és memóriaigény alakulásának feltérképezése.
+
+Mivel a genetikus algoritmusok sztochasztikus (véletlen alapú) működésűek, egyetlen futtatás eredménye nem tekinthető mérvadónak. Ezért a kiértékelés során statisztikai megközelítést alkalmaztunk: minden mérést többször (10-30 alkalommal) megismételtünk, és az eredmények átlagát, valamint szórását vizsgáltuk.
+
+\subsection{Tesztkörnyezet}
+
+A méréseket az alábbi hardver- és szoftverkörnyezetben végeztük:
+\begin{itemize}
+\item \textbf{Operációs rendszer:} Windows 11
+\item \textbf{Környezet:} Python 3.12
+\item \textbf{Felhasznált könyvtárak:} \texttt{NumPy} (számítások), \texttt{Matplotlib} (vizualizáció), \texttt{tracemalloc} (memóriamérés).
+\end{itemize}
+
+\subsection{Skálázhatóság és erőforrásigény}
+
+Az első vizsgálat célja annak meghatározása volt, hogyan növekszik a futási idő és a memóriahasználat a bemeneti pontok számának ($N$) növelésével. A teszt során 50 és 5000 közötti pontszámokat vizsgáltunk.
+
+\subsubsection{Futási idő}
+A futási idő mérése a teljes algoritmus lefutását magában foglalta (populáció inicializálása + generációk futtatása).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{images/scalability_runtime.png}
+\caption{Futási idő a pontok számának függvényében}
+\end{figure}
+
+\textbf{Elemzés:}
+A grafikonon látható, hogy a futási idő a pontok számával közel lineárisan, vagy enyhén polinomiálisan növekszik. Ez kedvező eredmény, mivel azt mutatja, hogy az algoritmus nagyobb adathalmazok (pl. 5000 pont) esetén is kezelhető időn belül (néhány másodperc alatt) eredményt ad. A szórás (hibasávok) viszonylag kicsi, ami stabil futási teljesítményre utal.
+
+\subsubsection{Memóriahasználat}
+A memóriahasználatot a Python \texttt{tracemalloc} moduljával mértük, amely a program futása során lefoglalt maximális memóriát (peak memory) rögzítette.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{images/scalability_memory.png}
+\caption{Memóriahasználat a pontok számának függvényében}
+\end{figure}
+
+\textbf{Elemzés:}
+A memóriahasználat szintén növekvő tendenciát mutat, de abszolút értékben rendkívül alacsony marad (még 5000 pont esetén is 1 MB alatt/körül mozog a többlet memóriaigény). Ez azt bizonyítja, hogy az implementáció memóriahatékony, a \texttt{NumPy} tömbök használata optimalizált adattárolást tesz lehetővé.
+
+\subsection{Paraméterek érzékenységvizsgálata}
+
+A genetikus algoritmusok teljesítményét nagyban befolyásolják a beállított hiperparaméterek. Kiemelten vizsgáltuk a \textbf{mutációs ráta} hatását, mivel ez felelős a populáció sokszínűségének fenntartásáért és a lokális optimumok elkerüléséért.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{images/sensitivity_mutation.png}
+\caption{Mutációs ráta hatása}
+\end{figure}
+
+\textbf{Elemzés:}
+A mérési eredmények (zöld pontok és hibasávok) alapján a következőket állapíthatjuk meg:
+\begin{itemize}
+\item \textbf{Túl alacsony mutáció (0.01):} Az algoritmus hajlamos korán konvergálni egy lokális optimumba, így a megtalált kör sugara nagyobb (rosszabb), mint az optimális.
+\item \textbf{Optimális tartomány (0.1 - 0.2):} Ebben a tartományban a legkisebb a megtalált körök sugara. Itt az algoritmus egyensúlyt tart a felfedezés (exploration) és a kiaknázás (exploitation) között.
+\item \textbf{Túl magas mutáció (> 0.4):} A keresés véletlenszerűvé válik, a jó megoldások "szétesnek" a túlzott változtatások miatt, így az eredmények romlanak és a szórás is megnő.
+\end{itemize}
+
+\subsection{Robusztusság és outlierek kezelése}
+
+A feladatkiírás egyik kritikus pontja a hibás mérések (outlierek) kezelése volt. Mivel a legkisebb befoglaló kör definíció szerint \textit{minden} pontot tartalmaz, egyetlen távoli pont is drasztikusan megnövelheti a szükséges kör sugarát. Azt vizsgáltuk, hogy az algoritmus képes-e alkalmazkodni ehhez, és megtalálja-e a matematikailag helyes (bár nagyobb) kört.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{images/robustness_outliers.png}
+\caption{Outlierek hatása}
+\end{figure}
+
+\textbf{Elemzés:}
+A dobozdiagram (boxplot) mutatja a megtalált kör sugarának eloszlását különböző outlier-számok mellett:
+\begin{itemize}
+\item \textbf{0 outlier:} A sugár kicsi és stabil.
+\item \textbf{Növekvő outlierek:} Ahogy növeljük a kiugró pontok számát, a kör sugara ugrásszerűen megnő. Ez \textbf{helyes működés}, hiszen a körnek tartalmaznia kell ezeket a távoli pontokat is.
+\item A dobozok magassága (interkvartilis terjedelem) jelzi, hogy az algoritmus még nehezített körülmények között is viszonylag konzisztens eredményeket ad, bár a szórás természetes módon növekszik a probléma nehézségével.
+\end{itemize}
+
+\subsection{Konvergencia vizsgálat}
+
+Végül megvizsgáltuk az algoritmus konvergencia-sebességét, azaz hogy hány generáció szükséges a megoldás megtalálásához. Az ábrán 30 futtatás átlagos legjobb fitnesz értéke látható a generációk függvényében.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{images/convergence_plot.png}
+\caption{Konvergencia görbe}
+\end{figure}
+
+\textbf{Elemzés:}
+\begin{itemize}
+\item \textbf{Gyors kezdeti javulás:} Az első 20-40 generációban a fitnesz érték (sugár) meredeken csökken. Az algoritmus gyorsan megtalálja a pontfelhő "nagyját" lefedő kört.
+\item \textbf{Finomhangolás:} A 40. generáció után a görbe ellaposodik, de továbbra is finom javulások figyelhetők meg.
+\item \textbf{Stabilitás:} A kék sáv (szórás) mutatja, hogy bár a véletlen faktor miatt van eltérés az egyes futások között, a konvergencia karaktere minden esetben hasonló. A 100-150. generáció környékére az algoritmus megbízhatóan beáll a globális optimum közelébe.
+\end{itemize}
+
+\subsection{Összegzés}
+
+A mérések alapján a kifejlesztett genetikus algoritmus megfelel a követelményeknek:
+\begin{enumerate}
+\item  \textbf{Hatékony:} Futási ideje és memóriaigénye alacsony, jól skálázódik.
+\item  \textbf{Pontos:} Megfelelő paraméterezés (0.1 körüli mutációs ráta) mellett stabilan megtalálja a szuboptimális vagy optimális megoldást.
+\item  \textbf{Robusztus:} Képes kezelni a zajos adatokat és az outliereket, a matematikai definíciónak megfelelő megoldást szolgáltatva.
+\end{enumerate}
+
+\end{document}
