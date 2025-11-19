@@ -1,0 +1,150 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+% \usepackage[hungarian]{babel} % Disabled due to compilation errors
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+% \usepackage{listings}
+% \usepackage{xcolor}
+
+\geometry{
+ left=25mm,
+ top=25mm,
+ right=25mm,
+ bottom=25mm
+}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=magenta,      
+    urlcolor=blue,
+}
+
+\title{Kör illesztése adott ponthalmazra 2.}
+\author{Mile Kolos}
+\date{2025. november 18.}
+
+\begin{document}
+
+% --- Címlap ---
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    
+    \Huge
+    \textbf{Mesterséges Intelligencia Szorgalmi Feladat}
+    
+    \vspace{0.5cm}
+    \LARGE
+    Téma: Kör illesztése adott ponthalmazra 2.
+    
+    \vspace{1.5cm}
+    
+    \textbf{Készítette:} Mile Kolos \\
+    \textbf{Neptun-kód:} OXEZ80 \\
+    \textbf{E-mail:} kolosk5@gmail.com
+    
+    \vspace{0.5cm}
+    
+    \textbf{Konzulens:} Dr. Póka György
+    
+    \vfill
+    
+    \Large
+    Budapesti Műszaki és Gazdaságtudományi Egyetem\\
+    Gépészmérnöki Kar\\
+    Gyártástudomány és Technológia Tanszék
+    
+    \vspace{0.8cm}
+    
+    Budapest, 2025. november 18.
+    
+\end{titlepage}
+
+% --- Tartalomjegyzék ---
+\tableofcontents
+\newpage
+
+% --- Feladat leírása ---
+\section{A feladat leírása}
+
+\subsection{A probléma bemutatása}
+
+A feladat egy klasszikus geometriai-optimalizálási probléma modern, mesterséges intelligencia alapú megközelítése. A cél egy adott 2D ponthalmazra a \textbf{legkisebb befoglaló kör} (minimum enclosing circle) meghatározása. A kihívást az jelenti, hogy a ponthalmaz nem ideális, hanem valós mérési vagy digitalizálási folyamatokból származó hibákat szimulál, úgymint:
+
+\begin{itemize}
+    \item \textbf{Alakhiba:} A pontok nem egy tökéletes köríven helyezkednek el.
+    \item \textbf{Véletlen zaj:} Minden pont pozíciója egy kis mértékű, véletlenszerű eltolással terhelt.
+    \item \textbf{Kiugró pontok (outlierek):} A ponthalmaz tartalmaz néhány, a fő csoporttól távol eső, hibás mérési eredményt szimuláló pontot.
+\end{itemize}
+
+Az algoritmusnak robusztusnak kell lennie, hogy ezekkel a hibákkal megbirkózzon, és a definíció szerint megtalálja azt a legkisebb sugarú kört, amely a ponthalmaz \textit{összes} elemét tartalmazza.
+
+\subsection{Célkitűzések}
+
+A projekt során a következő fő célokat kellett elérni:
+
+\begin{enumerate}
+    \item \textbf{Ponthalmaz generálása:} Egy olyan programmodul létrehozása, amely képes paraméterezhető módon, a fent említett hibákkal terhelt ponthalmazokat generálni.
+    \item \textbf{Algoritmus fejlesztése:} Egy mesterséges intelligencia alapú algoritmus (esetünkben genetikus algoritmus) implementálása, amely a generált ponthalmazra illeszti a legkisebb befoglaló kört.
+    \item \textbf{Kiértékelés:} A kifejlesztett módszer teljesítményének objektív elemzése. Vizsgálni kell a futási időt a bemeneti adatok méretének függvényében, elemezni kell az algoritmus paramétereinek (pl. mutációs ráta) hatását az eredményre, és vizsgálni kell a megoldás konvergenciáját.
+    \item \textbf{Dokumentálás:} A teljes folyamat, a módszer és az elért eredmények részletes dokumentálása a követelményeknek megfelelően.
+\end{enumerate}
+
+\newpage
+
+% --- Megoldás elve ---
+\section{A megoldás elve, módszere}
+
+A probléma megoldására egy Python-alapú szoftveres megoldás készült, amely egy genetikus algoritmust alkalmaz a legkisebb befoglaló kör megkeresésére.
+
+\subsection{Technológiai háttér}
+
+A projekt az alábbi technológiákra épül:
+\begin{itemize}
+    \item \textbf{Nyelv:} Python 3
+    \item \textbf{Könyvtárak:}
+    \begin{itemize}
+        \item \texttt{NumPy}: A numerikus számítások (távolságmérés, koordináta-manipuláció) hatékony elvégzéséért felel. Nélkülözhetetlen a nagy mennyiségű pontadat gyors feldolgozásához.
+        \item \texttt{Matplotlib}: Az adatok és eredmények vizualizációjáért felel. Segítségével ábrázoljuk a generált ponthalmazokat, az illesztett köröket és a kiértékelés során kapott grafikonokat.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Ponthalmaz generálása hibákkal}
+
+A kiindulási adathalmazt egy dedikált modul (\texttt{point\_generator.py}) hozza létre, amely egy ideális körből indul ki, és szisztematikusan hibákat ad hozzá:
+\begin{enumerate}
+    \item \textbf{Alap kör definiálása:} Egy $(x, y)$ középpontú, $r$ sugarú körön egyenletesen elhelyezünk $N$ számú pontot.
+    \item \textbf{Alakhiba hozzáadása:} A pontok koordinátáit enyhén torzítjuk, ami egy ellipszis-szerű alakot eredményez.
+    \item \textbf{Véletlen zaj hozzáadása:} Minden pont $x$ és $y$ koordinátájához egy normális eloszlású véletlen értéket adunk, ami a mérési pontatlanságot szimulálja.
+    \item \textbf{Kiugró pontok generálása:} A fő ponthalmazon kívül, nagyobb távolságra elhelyezünk néhány pontot, amelyek a durva mérési hibákat reprezentálják.
+\end{enumerate}
+
+\newpage
+
+% --- Implementáció bemutatása ---
+\section{Az implementáció bemutatása}
+
+A szoftver Python 3 nyelven készült, moduláris felépítéssel, hogy a különböző funkciók (pontgenerálás, algoritmus, kiértékelés) logikailag elkülönüljenek.
+
+\subsection{A projekt struktúrája}
+
+A projekt fő mappái és fájljai a következők:
+
+\begin{verbatim}
+.
+|-- docs/                 # Dokumentacio es feladatkiiras
+|-- src/                  # A Python forraskodok
+|   |-- point_generator.py
+|   |-- genetic_algorithm.py
+|   |-- evaluation.py
+|   |-- main.py
+|-- venv/                 # Virtualis kornyezet
+|-- .gitignore
+|-- requirements.txt      # Projekt fuggosegek
+|-- README.md
+\end{verbatim}
+
+\end{document}

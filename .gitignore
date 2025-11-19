@@ -48,8 +48,20 @@ htmlcov/
 nosetests.xml
 coverage.xml
 *.cover
-.hypothesis/
-.pytest_cache/
+
+# LaTeX intermediate files
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+*.dvi
+*.bbl
+*.blg
+*.lof
+*.lot
 
 # Jupyter Notebook
 .ipynb_checkpoints
