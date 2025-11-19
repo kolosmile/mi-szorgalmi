@@ -187,6 +187,12 @@ Ez a modul felel a tesztadatok, azaz a hibákkal terhelt ponthalmazok létrehoz�
 \item \textbf{\texttt{visualize\_point\_cloud(...)}}: Egy segédfüggvény, amely a \texttt{Matplotlib} segítségével kirajzolja a generált pontokat.
 \end{itemize}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{images/point_generation_output.png}
+\caption{A generált ponthalmaz vizualizációja}
+\end{figure}
+
 \subsection{\texorpdfstring{\texttt{genetic\_algorithm.py}}{genetic\_algorithm.py}: A körillesztő algoritmus}
 
 Ez a fájl tartalmazza a genetikus algoritmus logikáját egy \texttt{CircleGA} nevű osztályba zárva.
@@ -223,6 +229,12 @@ Ez a szkript a program belépési pontja. Összefogja a többi modul működés�
 \item \textbf{Vezérlés:} Meghívja a pontgenerátort, majd az eredményül kapott pontokra ráfuttatja a genetikus algoritmust.
 \item \textbf{Eredményközlés:} Kiírja a konzolra a futási időt és a megtalált kör paramétereit, majd vizuálisan is megjeleníti az eredményt.
 \end{itemize}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{images/main_output.png}
+\caption{A program futásának eredménye: az illesztett kör}
+\end{figure}
 
 \subsection{\texorpdfstring{\texttt{evaluation.py}}{evaluation.py}: A kiértékelő modul}
 
