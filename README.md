@@ -95,6 +95,23 @@ Az `evaluation.py` szkript különböző teszteket futtat az algoritmus teljesí
     python src/evaluation.py --convergence
     ```
 
+5.  **Ismert optimumú tesztesetek (szabályos sokszögek, ellipszisek):**
+    ```bash
+    python src/evaluation.py --known-optimum
+    ```
+
+6.  **Futási idő és iterációszám kapcsolata:**
+    ```bash
+    python src/evaluation.py --iteration-runtime
+    ```
+
+7.  **Paraméter variációk vizuális bemutatása:**
+    ```bash
+    python src/evaluation.py --parameter-variation
+    ```
+
+Az eredmények a `docs/documentation/images/` (grafikonok) és `docs/documentation/data/` (CSV adatok) mappákba kerülnek.
+
 ## Dokumentáció
 
 A projekt részletes dokumentációja a `docs/documentation` mappában található. A PDF generálásához LaTeX környezet (pl. TeX Live vagy TinyTeX) szükséges.
