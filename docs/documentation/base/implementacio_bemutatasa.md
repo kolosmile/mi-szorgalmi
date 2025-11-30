@@ -63,5 +63,20 @@ A modul parancssori argumentumokkal vezérelhető:
 *   `--mutation`: Mutációs ráta érzékenységvizsgálata.
 *   `--robustness`: Robusztusság vizsgálata (outlierek hatása).
 *   `--convergence`: Konvergencia vizsgálat.
+*   `--known-optimum`: Ismert optimumú tesztesetek validálása.
+*   `--iteration-runtime`: Futási idő és iterációszám kapcsolata.
+*   `--parameter-variation`: Különböző paraméter-beállítások vizuális bemutatása.
+
+### Ismert optimumú tesztek
+
+A modul tartalmaz speciális geometriai alakzatokat generáló függvényeket, amelyeknél az optimális befoglaló kör analitikusan ismert:
+*   **Szabályos sokszögek:** Háromszög, négyzet, hatszög, tízszög - a körülírt kör sugara egyenlő a csúcsok középponttól mért távolságával.
+*   **Ellipszisek:** Az optimális befoglaló kör sugara a nagyobb féltengely hosszával egyenlő.
+
+Ezek a tesztek lehetővé teszik az algoritmus pontosságának objektív mérését.
+
+### Paraméter variációs tesztek
+
+A modul különböző nehézségű ponthalmazokat generál a zaj, alakhiba és outlierek kombinálásával, majd vizuálisan összehasonlítja az eredményeket. Ez szemléletesen bemutatja az algoritmus robusztusságát.
 
 A modul a `tracemalloc` könyvtárat használja a memóriahasználat mérésére, és a `pandas` segítségével kezeli a mérési adatokat. Az eredmények a `docs/documentation/data` (CSV) és `docs/documentation/images` (PNG) mappákba kerülnek.
